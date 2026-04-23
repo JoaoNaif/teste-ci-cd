@@ -10,6 +10,9 @@ jobs:
   build:
     name: "Build and Push"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22]
 
     steps:
       - uses: actions/checkout@v6
@@ -17,7 +20,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           cache: "yarn"
       - name: Install dependencies
         run: yarn install --frozen-lockfile
