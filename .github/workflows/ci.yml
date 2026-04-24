@@ -10,9 +10,9 @@ jobs:
   build:
     name: "Build and Push"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [20, 22]
+    # strategy:
+    #   matrix:
+    #     node: [20, 22]
 
     steps:
       - uses: actions/checkout@v6
@@ -20,7 +20,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node }}
+          # node-version: ${{ matrix.node }}
+          node-version: 24
           cache: "yarn"
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -39,8 +40,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build docker image
-        run: docker build -t joaonaif/rocketseat-ci-api:${{ steps.generate_tag.outputs.sha }} .
+      - name: Build and Push image
+        uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: joaonaif/rocketseat-ci-api:${{ steps.generate_tag.outputs.sha }},joaonaif/rocketseat-ci-api:latest
 
-      - name: Push image
-        run: docker push joaonaif/rocketseat-ci-api:${{ steps.generate_tag.outputs.sha }}
+      # - name: Build docker image
+      #   run: docker build -t joaonaif/rocketseat-ci-api:${{ steps.generate_tag.outputs.sha }} .
+
+      # - name: Push image
+      #   run: docker push joaonaif/rocketseat-ci-api:${{ steps.generate_tag.outputs.sha }}
